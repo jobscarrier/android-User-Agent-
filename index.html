@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📱 Android User-Agent Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .input-focus {
+            transition: all 0.3s ease;
+        }
+        .input-focus:focus {
+            transform: scale(1.02);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        .btn-hover {
+            transition: all 0.3s ease;
+        }
+        .btn-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .result-container {
+            max-height: none;
+        }
+        body {
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .main-container {
+            min-height: 100vh;
+            padding-bottom: 2rem;
+        }
+    </style>
+</head>
+<body class="gradient-bg text-white">
+    <div class="main-container">
+        <div class="container mx-auto px-4 py-8">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">
+                    <i class="fas fa-mobile-alt text-yellow-300"></i> 
+                    Android User-Agent Generator
+                </h1>
+                <p class="text-lg text-gray-200 max-w-2xl mx-auto">
+                    Generate unlimited, unique Android user agents with customizable parameters for your testing needs
+                </p>
+            </div>
+
+            <!-- Main Content -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Input Panel -->
+                <div class="glass-effect rounded-xl p-6 space-y-6">
+                    <h2 class="text-2xl font-bold text-center mb-6">
+                        <i class="fas fa-cog text-blue-300"></i> Configuration
+                    </h2>
+
+                    <!-- Save/Load Section -->
+                    <div class="bg-white bg-opacity-10 rounded-lg p-4">
+                        <h3 class="text-lg font-semibold mb-3">
+                            <i class="fas fa-save text-green-300"></i> Save/Load Settings
+                        </h3>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="saveSettings()" class="btn-hover bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-sm font-medium">
+                                <i class="fas fa-save"></i> Save Settings
+                            </button>
+                            <button onclick="loadSettings()" class="btn-hover bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm font-medium">
+                                <i class="fas fa-upload"></i> Load Settings
+                            </button>
+                            <button onclick="clearSettings()" class="btn-hover bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm font-medium">
+                                <i class="fas fa-trash"></i> Clear All
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Base User Agent -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            <i class="fas fa-code text-purple-300"></i> Base User Agent
+                        </label>
+                        <textarea id="baseUserAgent" class="input-focus w-full p-3 rounded-lg bg-white bg-opacity-20 text-white placeholder-gray-300 border border-gray-300 border-opacity-20" rows="3" placeholder="Enter base Android user agent...">Mozilla/5.0 (Linux; Android 11; SM-G991B Build/RP1A.200720.012; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/91.0.4472.120 Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/330.0.0.32.120;]</textarea>
+                    </div>
+
+                    <!-- Quantity -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            <i class="fas fa-hashtag text-orange-300"></i> Quantity to Generate
+                        </label>
+                        <input type="number" id="quantity" class="input-focus w-full p-3 rounded-lg bg-white bg-opacity-20 text-white placeholder-gray-300 border border-gray-300 border-opacity-20" value="10" min="1" max="1000" placeholder="Enter quantity (1-1000)">
+                    </div>
+
+                    <!-- Android Version -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            <i class="fab fa-android text-green-300"></i> Android Version
+                        </label>
+                        <input type="text" id="androidVersion" class="input-focus w-full p-3 rounded-lg bg-white bg-opacity-20 text-white placeholder-gray-300 border border-gray-300 border-opacity-20" value="13" placeholder="e.g., 11, 12, 13, 14, 15">
+                    </div>
+
+                    <!-- Build Version -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            <i class="fas fa-wrench text-yellow-300"></i> Build Version
+                        </label>
+                        <input type="text" id="buildVersion" class="input-focus w-full p-3 rounded-lg bg-white bg-opacity-20 text-white placeholder-gray-300 border border-gray-300 border-opacity-20" value="TP1A.220624.014" placeholder="e.g., TP1A.220624.014">
+                    </div>
+
+                    <!-- Facebook Versions -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            <i class="fab fa-facebook text-blue-300"></i> Facebook App Versions Pool
+                        </label>
+                        <div class="space-y-2">
+                            <div class="flex">
+                                <input type="text" id="fbVersionInput" class="input-focus flex-1 p-3 rounded-l-lg bg-white bg-opacity-20 text-white placeholder-gray-300 border border-gray-300 border-opacity-20" placeholder="e.g., 523.0.0.23.106">
+                                <button onclick="addFacebookVersion()" class="btn-hover bg-blue-600 hover:bg-blue-700 px-4 py-3 rounded-r-lg">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div id="fbVersionsList" class="flex flex-wrap gap-2 min-h-8"></div>
+                        </div>
+                    </div>
+
+                    <!-- Chrome Versions -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            <i class="fab fa-chrome text-red-300"></i> Chrome Versions Pool
+                        </label>
+                        <div class="space-y-2">
+                            <div class="flex">
+                                <input type="text" id="chromeVersionInput" class="input-focus flex-1 p-3 rounded-l-lg bg-white bg-opacity-20 text-white placeholder-gray-300 border border-gray-300 border-opacity-20" placeholder="e.g., 145.0.5938.153">
+                                <button onclick="addChromeVersion()" class="btn-hover bg-red-600 hover:bg-red-700 px-4 py-3 rounded-r-lg">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div id="chromeVersionsList" class="flex flex-wrap gap-2 min-h-8"></div>
+                        </div>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <button onclick="generateUserAgents()" class="btn-hover w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 py-4 rounded-lg font-bold text-lg">
+                        <i class="fas fa-magic"></i> Generate User Agents
+                    </button>
+                </div>
+
+                <!-- Results Panel -->
+                <div class="glass-effect rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold">
+                            <i class="fas fa-list text-green-300"></i> Generated Results
+                        </h2>
+                        <div class="flex gap-2">
+                            <button onclick="copyAllToClipboard()" class="btn-hover bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-sm font-medium">
+                                <i class="fas fa-copy"></i> Copy All
+                            </button>
+                            <button onclick="downloadResults()" class="btn-hover bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-sm font-medium">
+                                <i class="fas fa-download"></i> Download
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Results Statistics -->
+                    <div id="resultsStats" class="bg-white bg-opacity-10 rounded-lg p-4 mb-4 hidden">
+                        <div class="grid grid-cols-2 gap-4 text-center">
+                            <div>
+                                <div class="text-2xl font-bold text-blue-300" id="totalGenerated">0</div>
+                                <div class="text-sm text-gray-300">Generated</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold text-green-300" id="uniqueCount">0</div>
+                                <div class="text-sm text-gray-300">Unique</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results Container -->
+                    <div class="result-container">
+                        <div id="results" class="bg-black bg-opacity-30 rounded-lg p-4 min-h-96 font-mono text-sm">
+                            <div class="text-center text-gray-400 py-8">
+                                <i class="fas fa-rocket text-4xl mb-4"></i>
+                                <p>Configure your settings and click "Generate User Agents" to see results here</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let facebookVersions = ['523.0.0.23.106', '589.1.0.21.101', '588.0.0.20.97'];
+        let chromeVersions = ['145.0.5938.153', '142.0.5993.90', '149.0.6045.134'];
+        let generatedUserAgents = [];
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            updateVersionLists();
+            loadSettings();
+        });
+
+        // Add Facebook version
+        function addFacebookVersion() {
+            const input = document.getElementById('fbVersionInput');
+            const version = input.value.trim();
+            if (version && !facebookVersions.includes(version)) {
+                facebookVersions.push(version);
+                input.value = '';
+                updateVersionLists();
+            }
+        }
+
+        // Add Chrome version
+        function addChromeVersion() {
+            const input = document.getElementById('chromeVersionInput');
+            const version = input.value.trim();
+            if (version && !chromeVersions.includes(version)) {
+                chromeVersions.push(version);
+                input.value = '';
+                updateVersionLists();
+            }
+        }
+
+        // Remove version from array
+        function removeFacebookVersion(index) {
+            facebookVersions.splice(index, 1);
+            updateVersionLists();
+        }
+
+        function removeChromeVersion(index) {
+            chromeVersions.splice(index, 1);
+            updateVersionLists();
+        }
+
+        // Update version lists display
+        function updateVersionLists() {
+            const fbList = document.getElementById('fbVersionsList');
+            const chromeList = document.getElementById('chromeVersionsList');
+
+            fbList.innerHTML = facebookVersions.map((version, index) => 
+                `<span class="bg-blue-600 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+                    ${version}
+                    <button onclick="removeFacebookVersion(${index})" class="hover:text-red-300">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </span>`
+            ).join('');
+
+            chromeList.innerHTML = chromeVersions.map((version, index) => 
+                `<span class="bg-red-600 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+                    ${version}
+                    <button onclick="removeChromeVersion(${index})" class="hover:text-red-300">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </span>`
+            ).join('');
+        }
+
+        // Generate user agents
+        function generateUserAgents() {
+            const baseUA = document.getElementById('baseUserAgent').value.trim();
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const androidVersion = document.getElementById('androidVersion').value.trim();
+            const buildVersion = document.getElementById('buildVersion').value.trim();
+
+            if (!baseUA) {
+                alert('Please enter a base user agent');
+                return;
+            }
+
+            if (facebookVersions.length === 0) {
+                alert('Please add at least one Facebook version');
+                return;
+            }
+
+            if (chromeVersions.length === 0) {
+                alert('Please add at least one Chrome version');
+                return;
+            }
+
+            generatedUserAgents = [];
+            const uniqueSet = new Set();
+
+            // Generate user agents with different combinations
+            for (let i = 0; i < quantity; i++) {
+                let userAgent = baseUA;
+
+                // Replace Android version
+                if (androidVersion) {
+                    userAgent = userAgent.replace(/Android \d+(\.\d+)?/g, `Android ${androidVersion}`);
+                }
+
+                // Replace build version
+                if (buildVersion) {
+                    userAgent = userAgent.replace(/Build\/[^;)]+/g, `Build/${buildVersion}`);
+                }
+
+                // Replace Facebook version
+                const fbVersion = facebookVersions[i % facebookVersions.length];
+                userAgent = userAgent.replace(/FBAV\/[^;]+/g, `FBAV/${fbVersion}`);
+
+                // Replace Chrome version
+                const chromeVersion = chromeVersions[i % chromeVersions.length];
+                userAgent = userAgent.replace(/Chrome\/[\d.]+/g, `Chrome/${chromeVersion}`);
+
+                // Add some randomization to make each UA unique
+                const randomSuffix = Math.floor(Math.random() * 1000);
+                userAgent = userAgent.replace(/Mobile Safari\/[\d.]+/g, `Mobile Safari/537.36.${randomSuffix}`);
+
+                generatedUserAgents.push(userAgent);
+                uniqueSet.add(userAgent);
+            }
+
+            displayResults();
+            updateStats(generatedUserAgents.length, uniqueSet.size);
+        }
+
+        // Display results
+        function displayResults() {
+            const resultsDiv = document.getElementById('results');
+            const statsDiv = document.getElementById('resultsStats');
+            
+            if (generatedUserAgents.length === 0) {
+                resultsDiv.innerHTML = `
+                    <div class="text-center text-gray-400 py-8">
+                        <i class="fas fa-rocket text-4xl mb-4"></i>
+                        <p>Configure your settings and click "Generate User Agents" to see results here</p>
+                    </div>
+                `;
+                statsDiv.classList.add('hidden');
+                return;
+            }
+
+            statsDiv.classList.remove('hidden');
+            resultsDiv.innerHTML = generatedUserAgents.map((ua, index) => 
+                `<div class="mb-3 p-3 bg-white bg-opacity-5 rounded border-l-4 border-blue-500">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1 mr-3">
+                            <div class="text-xs text-gray-400 mb-1">User Agent #${index + 1}</div>
+                            <div class="break-all text-green-300">${ua}</div>
+                        </div>
+                        <button onclick="copyToClipboard('${ua.replace(/'/g, "\\'")}', ${index + 1})" class="btn-hover bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded text-xs">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>`
+            ).join('');
+        }
+
+        // Update statistics
+        function updateStats(total, unique) {
+            document.getElementById('totalGenerated').textContent = total;
+            document.getElementById('uniqueCount').textContent = unique;
+        }
+
+        // Copy to clipboard
+        function copyToClipboard(text, index) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Show success feedback
+                const btn = event.target.closest('button');
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i>';
+                btn.classList.add('bg-green-600');
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove('bg-green-600');
+                }, 1000);
+            });
+        }
+
+        // Copy all to clipboard
+        function copyAllToClipboard() {
+            if (generatedUserAgents.length === 0) {
+                alert('No user agents to copy');
+                return;
+            }
+
+            const allUserAgents = generatedUserAgents.join('\n');
+            navigator.clipboard.writeText(allUserAgents).then(() => {
+                // Show success feedback
+                const btn = event.target;
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                btn.classList.add('bg-green-700');
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove('bg-green-700');
+                }, 2000);
+            });
+        }
+
+        // Download results
+        function downloadResults() {
+            if (generatedUserAgents.length === 0) {
+                alert('No user agents to download');
+                return;
+            }
+
+            const content = generatedUserAgents.join('\n');
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            a.href = url;
+            a.download = `android_user_agents_${timestamp}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        // Save settings
+        function saveSettings() {
+            const settings = {
+                baseUserAgent: document.getElementById('baseUserAgent').value,
+                quantity: document.getElementById('quantity').value,
+                androidVersion: document.getElementById('androidVersion').value,
+                buildVersion: document.getElementById('buildVersion').value,
+                facebookVersions: facebookVersions,
+                chromeVersions: chromeVersions
+            };
+
+            localStorage.setItem('androidUAGeneratorSettings', JSON.stringify(settings));
+            
+            // Show success feedback
+            const btn = event.target;
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+            }, 1500);
+        }
+
+        // Load settings
+        function loadSettings() {
+            const saved = localStorage.getItem('androidUAGeneratorSettings');
+            if (!saved) {
+                alert('No saved settings found');
+                return;
+            }
+
+            try {
+                const settings = JSON.parse(saved);
+                document.getElementById('baseUserAgent').value = settings.baseUserAgent || '';
+                document.getElementById('quantity').value = settings.quantity || '10';
+                document.getElementById('androidVersion').value = settings.androidVersion || '';
+                document.getElementById('buildVersion').value = settings.buildVersion || '';
+                
+                facebookVersions = settings.facebookVersions || ['523.0.0.23.106', '589.1.0.21.101', '588.0.0.20.97'];
+                chromeVersions = settings.chromeVersions || ['145.0.5938.153', '142.0.5993.90', '149.0.6045.134'];
+                
+                updateVersionLists();
+
+                // Show success feedback
+                const btn = event.target;
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Loaded!';
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                }, 1500);
+            } catch (e) {
+                alert('Error loading settings');
+            }
+        }
+
+        // Clear settings
+        function clearSettings() {
+            if (confirm('Are you sure you want to clear all settings?')) {
+                document.getElementById('baseUserAgent').value = 'Mozilla/5.0 (Linux; Android 11; SM-G991B Build/RP1A.200720.012; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/91.0.4472.120 Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/330.0.0.32.120;]';
+                document.getElementById('quantity').value = '10';
+                document.getElementById('androidVersion').value = '13';
+                document.getElementById('buildVersion').value = 'TP1A.220624.014';
+                
+                facebookVersions = ['523.0.0.23.106', '589.1.0.21.101', '588.0.0.20.97'];
+                chromeVersions = ['145.0.5938.153', '142.0.5993.90', '149.0.6045.134'];
+                
+                updateVersionLists();
+                generatedUserAgents = [];
+                displayResults();
+                
+                localStorage.removeItem('androidUAGeneratorSettings');
+            }
+        }
+
+        // Handle Enter key for inputs
+        document.getElementById('fbVersionInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addFacebookVersion();
+            }
+        });
+
+        document.getElementById('chromeVersionInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addChromeVersion();
+            }
+        });
+
+        // Auto-save on input change
+        const inputs = ['baseUserAgent', 'quantity', 'androidVersion', 'buildVersion'];
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('blur', () => {
+                // Auto-save after 1 second of no changes
+                setTimeout(() => {
+                    const settings = JSON.parse(localStorage.getItem('androidUAGeneratorSettings') || '{}');
+                    settings[id] = document.getElementById(id).value;
+                    settings.facebookVersions = facebookVersions;
+                    settings.chromeVersions = chromeVersions;
+                    localStorage.setItem('androidUAGeneratorSettings', JSON.stringify(settings));
+                }, 1000);
+            });
+        });
+    </script>
+</body>
+</html>
